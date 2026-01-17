@@ -7,9 +7,12 @@ pipeline {
     IMAGE_TAG  = "build-${BUILD_NUMBER}"
     FULL_IMAGE = "${IMAGE_NAME}:${IMAGE_TAG}"
 
-    // CHANGE THESE:
-    KATALON_PROJECT_PATH = "."                  // folder (in repo) that contains your Katalon project
-    TEST_SUITE_PATH      = "Test Suites/Smoke"  // your real suite path
+    // Project is at repo root
+    KATALON_PROJECT_PATH = "."
+
+    // CHANGE THIS to your real suite name/path
+    TEST_SUITE_PATH      = "Test Suites/Smoke"
+
     EXEC_PROFILE         = "default"
     BROWSER              = "Chrome"
   }
