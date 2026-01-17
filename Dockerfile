@@ -12,7 +12,7 @@ RUN apt-get update && \
       ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
-# OPTIONAL: AWS CLI v2 if your tests hit AWS
+# OPTIONAL: AWS CLI v2 (keep if your tests hit AWS/ECR/etc.)
 RUN curl -fsSL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip" && \
     unzip -q /tmp/awscliv2.zip -d /tmp && \
     /tmp/aws/install && \
@@ -20,5 +20,5 @@ RUN curl -fsSL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/t
 
 WORKDIR /workspace
 
-# Pattern A: container runs katalon commands passed by Jenkins
+# Pattern A: Jenkins passes the katalonc command at runtime
 ENTRYPOINT ["/bin/bash","-lc"]
