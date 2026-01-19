@@ -27,7 +27,7 @@ pipeline {
     stage('Run Katalon') {
       steps {
         sh '''
-          set -euo pipefefail
+          set -euo pipefail
           docker run --rm \
             -v "$PWD:/workspace" \
             -w /workspace \
