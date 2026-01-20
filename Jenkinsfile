@@ -29,20 +29,20 @@ pipeline {
         sh '''
           set -euo pipefail
           
-          echo "Testing network connectivity..."
-          docker run --rm "${FULL_IMAGE}" curl -I https://www.katalon.com || echo "Network test failed"
-          
           docker run --rm \
             -v "$PWD:/workspace" \
             -w /workspace \
             -e KATALON_API_KEY="${KATALON_API_KEY}" \
+            -e API_KEY="${KATALON_API_KEY}" \
             "${FULL_IMAGE}" \
             katalonc \
+              -apiKey="${KATALON_API_KEY}" \
               -projectPath="/workspace/${KATALON_PROJECT_PATH}" \
               -testSuitePath="${TEST_SUITE_PATH}" \
               -executionProfile="${EXEC_PROFILE}" \
               -browserType="${BROWSER}" \
-              -retry=0
+              -retry=0 \
+              -noExit
         '''
       }
     }
@@ -56,4 +56,3 @@ pipeline {
     }
   }
 }
-# End of Jenkinsfile
