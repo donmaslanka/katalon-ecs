@@ -1,5 +1,5 @@
 pipeline {
-  agent { label '' }
+  agent any
   options { timestamps() }
   environment {
     IMAGE_NAME = "katalon-runner"
@@ -34,7 +34,7 @@ pipeline {
             -e KATALON_API_KEY="${KATALON_API_KEY}" \
             "${FULL_IMAGE}" \
             katalonc \
-              -apiKey="${KATALON_API_KEY}" \
+              -apiKey "${KATALON_API_KEY}" \
               -projectPath="/workspace/${KATALON_PROJECT_PATH}" \
               -testSuitePath="${TEST_SUITE_PATH}" \
               -executionProfile="${EXEC_PROFILE}" \
