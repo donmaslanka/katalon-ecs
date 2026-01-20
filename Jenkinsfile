@@ -1,5 +1,5 @@
 pipeline {
-  agent { label 'any' }
+  agent { label '' }
   options { timestamps() }
   environment {
     IMAGE_NAME = "katalon-runner"
