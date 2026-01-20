@@ -10,6 +10,7 @@ pipeline {
     EXEC_PROFILE         = "default"
     BROWSER              = "Chrome"
     KATALON_API_KEY      = credentials('katalon-api-key')
+    KATALON_ORG_ID       = credentials('katalon-org-id')
   }
   stages {
     stage('Checkout') {
@@ -33,16 +34,15 @@ pipeline {
             -v "$PWD:/workspace" \
             -w /workspace \
             -e KATALON_API_KEY="${KATALON_API_KEY}" \
-            -e API_KEY="${KATALON_API_KEY}" \
             "${FULL_IMAGE}" \
             katalonc \
               -apiKey="${KATALON_API_KEY}" \
+              -orgID="${KATALON_ORG_ID}" \
               -projectPath="/workspace/${KATALON_PROJECT_PATH}" \
               -testSuitePath="${TEST_SUITE_PATH}" \
               -executionProfile="${EXEC_PROFILE}" \
               -browserType="${BROWSER}" \
-              -retry=0 \
-              -noExit
+              -retry=0
         '''
       }
     }
