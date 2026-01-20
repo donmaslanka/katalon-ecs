@@ -1,5 +1,5 @@
 pipeline {
-  agent { label 'docker' }
+  agent { label 'any' }
   options { timestamps() }
   environment {
     IMAGE_NAME = "katalon-runner"
