@@ -29,10 +29,35 @@ pipeline {
             echo "Building Katalon runner image..."
             echo "API key length: ${#KATALON_API_KEY}"
             
-            # Build with API key as build arg
             docker build \
               --build-arg KATALON_API_KEY="${KATALON_API_KEY}" \
               -t "${FULL_IMAGE}" .
+          '''
+        }
+      }
+    }
+
+    stage('Debug Container Environment') {
+      steps {
+        withCredentials([
+          string(credentialsId: 'katalon-api-key', variable: 'KATALON_API_KEY'),
+          string(credentialsId: 'katalon-org-id',  variable: 'KATALON_ORG_ID')
+        ]) {
+          sh '''
+            set -euo pipefail
+            
+            echo "=== HOST ENVIRONMENT CHECK ==="
+            echo "KATALON_API_KEY length: ${#KATALON_API_KEY}"
+            echo "KATALON_ORG_ID length: ${#KATALON_ORG_ID}"
+            echo "First 10 chars of API key: ${KATALON_API_KEY:0:10}"
+            
+            echo ""
+            echo "=== CONTAINER ENVIRONMENT CHECK ==="
+            docker run --rm \
+              -e KATALON_API_KEY \
+              -e KATALON_ORG_ID \
+              "${FULL_IMAGE}" \
+              bash -c 'echo "Inside container - API key length: ${#KATALON_API_KEY}"; echo "Inside container - ORG ID length: ${#KATALON_ORG_ID}"; echo "API key from ENV: ${KATALON_API_KEY:0:10}"; echo "API key from build ARG-based ENV: $KATALON_API_KEY" | cut -c1-10'
           '''
         }
       }
@@ -47,10 +72,6 @@ pipeline {
           sh '''
             set -euo pipefail
 
-            echo "=== Credential Check ==="
-            echo "KATALON_API_KEY length: ${#KATALON_API_KEY}"
-            echo "KATALON_ORG_ID length: ${#KATALON_ORG_ID}"
-            
             echo "=== Network Connectivity Test ==="
             curl -I https://api.katalon.com || echo "WARNING: Cannot reach api.katalon.com"
 
@@ -61,17 +82,7 @@ pipeline {
               -e KATALON_API_KEY \
               -e KATALON_ORG_ID \
               "${FULL_IMAGE}" \
-              katalonc \
-                -noSplash \
-                -runMode=console \
-                -apiKey="$KATALON_API_KEY" \
-                -orgID="$KATALON_ORG_ID" \
-                -projectPath="/workspace/${KATALON_PROJECT_PATH}" \
-                -testSuitePath="${TEST_SUITE_PATH}" \
-                -executionProfile="${EXEC_PROFILE}" \
-                -browserType="${BROWSER}" \
-                -retry=0 \
-                -licenseRelease
+              bash -lc "katalonc -noSplash -runMode=console -apiKey=\"\${KATALON_API_KEY}\" -orgID=\"\${KATALON_ORG_ID}\" -projectPath=\"/workspace/${KATALON_PROJECT_PATH}\" -testSuitePath=\"${TEST_SUITE_PATH}\" -executionProfile=\"${EXEC_PROFILE}\" -browserType=\"${BROWSER}\" -retry=0 -licenseRelease"
           '''
         }
       }
