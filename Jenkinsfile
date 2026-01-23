@@ -1,3 +1,8 @@
+# Backup the current Jenkinsfile
+sudo cp Jenkinsfile Jenkinsfile.backup
+
+# Create the new Jenkinsfile
+sudo tee Jenkinsfile > /dev/null << 'EOF'
 pipeline {
   agent any
   options { timestamps() }
@@ -7,7 +12,6 @@ pipeline {
     IMAGE_TAG  = "build-${BUILD_NUMBER}"
     FULL_IMAGE = "${IMAGE_NAME}:${IMAGE_TAG}"
 
-    // Workspace/test settings
     KATALON_PROJECT_PATH = "."
     TEST_SUITE_PATH      = "Test Suites/Smoke"
     EXEC_PROFILE         = "default"
@@ -26,9 +30,11 @@ pipeline {
         ]) {
           sh '''
             set -euo pipefail
-            docker version
             
-            # Build with API key as build arg for activation during image build
+            echo "Building Katalon runner image..."
+            echo "API key length: ${#KATALON_API_KEY}"
+            
+            # Build with API key as build arg
             docker build \
               --build-arg KATALON_API_KEY="${KATALON_API_KEY}" \
               -t "${FULL_IMAGE}" .
@@ -46,16 +52,14 @@ pipeline {
           sh '''
             set -euo pipefail
 
-            # Debug: Verify credentials are populated
+            echo "=== Credential Check ==="
             echo "KATALON_API_KEY length: ${#KATALON_API_KEY}"
             echo "KATALON_ORG_ID length: ${#KATALON_ORG_ID}"
             
-            # Network connectivity check to Katalon license server
-            echo "Testing connectivity to Katalon license server..."
-            curl -I https://license.katalon.com --max-time 10 || {
-              echo "WARNING: Cannot reach license.katalon.com - check firewall/security groups"
-            }
+            echo "=== Network Connectivity Test ==="
+            curl -I https://api.katalon.com || echo "WARNING: Cannot reach api.katalon.com"
 
+            echo "=== Running Katalon Tests ==="
             docker run --rm \
               -v "$PWD:/workspace" \
               -w /workspace \
@@ -88,3 +92,7 @@ pipeline {
     }
   }
 }
+EOF
+
+# Verify the file was created correctly
+cat Jenkinsfile
