@@ -21,16 +21,19 @@ pipeline {
     stage('Build runner image') {
       steps {
         withCredentials([
-          string(credentialsId: 'katalon-api-key', variable: 'KATALON_API_KEY')
+          string(credentialsId: 'katalon-api-key', variable: 'KATALON_API_KEY'),
+          string(credentialsId: 'katalon-org-id',  variable: 'KATALON_ORG_ID')
         ]) {
           sh '''
             set -euo pipefail
             
             echo "Building Katalon runner image..."
             echo "API key length: ${#KATALON_API_KEY}"
+            echo "ORG ID length: ${#KATALON_ORG_ID}"
             
             docker build \
               --build-arg KATALON_API_KEY="${KATALON_API_KEY}" \
+              --build-arg KATALON_ORG_ID="${KATALON_ORG_ID}" \
               -t "${FULL_IMAGE}" .
           '''
         }
@@ -49,15 +52,14 @@ pipeline {
             echo "=== HOST ENVIRONMENT CHECK ==="
             echo "KATALON_API_KEY length: ${#KATALON_API_KEY}"
             echo "KATALON_ORG_ID length: ${#KATALON_ORG_ID}"
-            echo "First 10 chars of API key: ${KATALON_API_KEY:0:10}"
             
             echo ""
-            echo "=== CONTAINER ENVIRONMENT CHECK ==="
+            echo "=== CONTAINER ENVIRONMENT CHECK (using sh -c) ==="
             docker run --rm \
               -e KATALON_API_KEY="${KATALON_API_KEY}" \
               -e KATALON_ORG_ID="${KATALON_ORG_ID}" \
               "${FULL_IMAGE}" \
-              bash -c "echo API key length inside: \\${#KATALON_API_KEY}; echo ORG ID length inside: \\${#KATALON_ORG_ID}"
+              sh -c "echo API key length: \${#KATALON_API_KEY}; echo ORG ID length: \${#KATALON_ORG_ID}; env | grep KATALON"
           '''
         }
       }
@@ -82,7 +84,17 @@ pipeline {
               -e KATALON_API_KEY="${KATALON_API_KEY}" \
               -e KATALON_ORG_ID="${KATALON_ORG_ID}" \
               "${FULL_IMAGE}" \
-              bash -lc "katalonc -noSplash -runMode=console -apiKey=\\${KATALON_API_KEY} -orgID=\\${KATALON_ORG_ID} -projectPath=/workspace/${KATALON_PROJECT_PATH} -testSuitePath='${TEST_SUITE_PATH}' -executionProfile=${EXEC_PROFILE} -browserType=${BROWSER} -retry=0 -licenseRelease"
+              katalonc \
+                -noSplash \
+                -runMode=console \
+                -apiKey="${KATALON_API_KEY}" \
+                -orgID="${KATALON_ORG_ID}" \
+                -projectPath="/workspace/${KATALON_PROJECT_PATH}" \
+                -testSuitePath="${TEST_SUITE_PATH}" \
+                -executionProfile="${EXEC_PROFILE}" \
+                -browserType="${BROWSER}" \
+                -retry=0 \
+                -licenseRelease
           '''
         }
       }
