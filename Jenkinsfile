@@ -1,8 +1,3 @@
-# Backup the current Jenkinsfile
-sudo cp Jenkinsfile Jenkinsfile.backup
-
-# Create the new Jenkinsfile
-sudo tee Jenkinsfile > /dev/null << 'EOF'
 pipeline {
   agent any
   options { timestamps() }
@@ -93,6 +88,3 @@ pipeline {
   }
 }
 EOF
-
-# Verify the file was created correctly
-cat Jenkinsfile
