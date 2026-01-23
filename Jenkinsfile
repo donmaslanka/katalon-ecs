@@ -54,10 +54,10 @@ pipeline {
             echo ""
             echo "=== CONTAINER ENVIRONMENT CHECK ==="
             docker run --rm \
-              -e KATALON_API_KEY \
-              -e KATALON_ORG_ID \
+              -e KATALON_API_KEY="${KATALON_API_KEY}" \
+              -e KATALON_ORG_ID="${KATALON_ORG_ID}" \
               "${FULL_IMAGE}" \
-              bash -c 'echo "Inside container - API key length: ${#KATALON_API_KEY}"; echo "Inside container - ORG ID length: ${#KATALON_ORG_ID}"; echo "API key from ENV: ${KATALON_API_KEY:0:10}"; echo "API key from build ARG-based ENV: $KATALON_API_KEY" | cut -c1-10'
+              bash -c "echo API key length inside: \\${#KATALON_API_KEY}; echo ORG ID length inside: \\${#KATALON_ORG_ID}"
           '''
         }
       }
@@ -79,10 +79,10 @@ pipeline {
             docker run --rm \
               -v "$PWD:/workspace" \
               -w /workspace \
-              -e KATALON_API_KEY \
-              -e KATALON_ORG_ID \
+              -e KATALON_API_KEY="${KATALON_API_KEY}" \
+              -e KATALON_ORG_ID="${KATALON_ORG_ID}" \
               "${FULL_IMAGE}" \
-              bash -lc "katalonc -noSplash -runMode=console -apiKey=\"\${KATALON_API_KEY}\" -orgID=\"\${KATALON_ORG_ID}\" -projectPath=\"/workspace/${KATALON_PROJECT_PATH}\" -testSuitePath=\"${TEST_SUITE_PATH}\" -executionProfile=\"${EXEC_PROFILE}\" -browserType=\"${BROWSER}\" -retry=0 -licenseRelease"
+              bash -lc "katalonc -noSplash -runMode=console -apiKey=\\${KATALON_API_KEY} -orgID=\\${KATALON_ORG_ID} -projectPath=/workspace/${KATALON_PROJECT_PATH} -testSuitePath='${TEST_SUITE_PATH}' -executionProfile=${EXEC_PROFILE} -browserType=${BROWSER} -retry=0 -licenseRelease"
           '''
         }
       }
@@ -98,4 +98,3 @@ pipeline {
     }
   }
 }
-EOF
