@@ -7,7 +7,7 @@ pipeline {
     IMAGE_TAG  = "build-${BUILD_NUMBER}"
     FULL_IMAGE = "${IMAGE_NAME}:${IMAGE_TAG}"
 
-    KATALON_PROJECT_PATH = "katalon-ecs.prj"
+    KATALON_PROJECT_PATH = "/workspace"
     TEST_SUITE_PATH      = "Test Suites/Smoke"
     EXEC_PROFILE         = "default"
     BROWSER              = "Chrome"
