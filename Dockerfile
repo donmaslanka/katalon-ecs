@@ -20,7 +20,7 @@ RUN apt-get update && \
     ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
-# OPTIONAL: AWS CLI v2 (keep if your tests hit AWS/ECR/etc.)
+# OPTIONAL: AWS CLI v2
 RUN curl -fsSL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip" && \
     unzip -q /tmp/awscliv2.zip -d /tmp && \
     /tmp/aws/install && \
@@ -28,5 +28,4 @@ RUN curl -fsSL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/t
 
 WORKDIR /workspace
 
-# Use default shell entry point
-ENTRYPOINT ["/bin/bash", "-c"]
+# NO ENTRYPOINT - Let Docker run commands directly
