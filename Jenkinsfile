@@ -7,10 +7,9 @@ pipeline {
     IMAGE_TAG  = "build-${BUILD_NUMBER}"
     FULL_IMAGE = "${IMAGE_NAME}:${IMAGE_TAG}"
 
-    KATALON_PROJECT_PATH = "."
-    TEST_SUITE_PATH      = "Test Suites/Smoke"
-    EXEC_PROFILE         = "default"
-    BROWSER              = "Chrome"
+    TEST_SUITE_PATH = "Test Suites/Smoke"
+    EXEC_PROFILE    = "default"
+    BROWSER         = "Chrome"
   }
 
   stages {
@@ -89,7 +88,7 @@ pipeline {
                 -runMode=console \
                 -apiKey="${KATALON_API_KEY}" \
                 -orgID="${KATALON_ORG_ID}" \
-                -projectPath="/workspace/${KATALON_PROJECT_PATH}" \
+                -projectPath="/workspace" \
                 -testSuitePath="${TEST_SUITE_PATH}" \
                 -executionProfile="${EXEC_PROFILE}" \
                 -browserType="${BROWSER}" \
