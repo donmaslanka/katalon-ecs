@@ -88,7 +88,7 @@ pipeline {
                 -runMode=console \
                 -apiKey="${KATALON_API_KEY}" \
                 -orgID="${KATALON_ORG_ID}" \
-                -projectPath="/workspace" \
+                -projectPath="/workspace/Katalon-ECS-TEST" \
                 -testSuitePath="${TEST_SUITE_PATH}" \
                 -executionProfile="${EXEC_PROFILE}" \
                 -browserType="${BROWSER}" \
